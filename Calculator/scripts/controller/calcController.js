@@ -1,6 +1,0 @@
-class CalcController {
-    
-    constructor(parameters) {
-        
-    }
-}
