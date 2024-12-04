@@ -29,6 +29,8 @@ class CalcController {
     }
     clearAll(){
         this._operation = [];
+        this.setLastNumberToDisplay();
+
     }
     getLastOperation(){
        return this._operation[this._operation.length -1];
@@ -37,15 +39,50 @@ class CalcController {
         return(['+', '-', '*', '/', '%'].indexOf(value) > -1);
 
     }
-    setLastOperation(value){
-        this._operation[this._operation.length - 1] = parseInt(value);
+    pushOperation(value){
+        this._operation.push(value);
+        if(this._operation.length > 3){
+
+            this.calc();
+
+             }
     }
+
+    calc(){
+            let last = this._operation.pop();
+
+            let result = eval(this._operation.join(""));
+
+            this._operation = [result, last];
+
+            this.setLastNumberToDisplay();
+    }
+
+    setLastOperation(value){
+        this._operation[this._operation.length - 1] = value;
+    }
+
+    setLastNumberToDisplay(){
+        let lastNumber;
+        for (let i = this._operation.length-1; i >= 0; i--) {
+
+            if(!this.isOperator(this._operation[i])){
+                lastNumber = this._operation[i];
+                break;
+            }
+
+
+        }
+        this.displayCalc = lastNumber;
+    }
+
     addOperation(value){
+
         if(isNaN(this.getLastOperation())){
 
             if(this.isOperator(value)){
 
-                this._setLastOperation(value);
+                this.setLastOperation(value);
 
             }else if(isNaN(value)){
                     //Outro valor
@@ -53,16 +90,23 @@ class CalcController {
             }
             else{
 
-                this._operation.push(value);
+                this.pushOperation(value);
+                this.setLastNumberToDisplay();
 
             }
         }else{
             //number
-           let newValue = this.getLastOperation().toString() + value.toString();
-           this.setLastOperation(parseInt(newValue));
+           if(this.isOperator(value)){
+                this.pushOperation(value);
+           }else{
+                let newValue = this.getLastOperation().toString() + value.toString();
+                this.setLastOperation(parseInt(newValue));
+
+                this.setLastNumberToDisplay();
+            }
         }
        // this._operation.push(value);
-        console.log(this._operation);
+      //  console.log(this._operation);
     }
 T
     clearEntry(){
@@ -73,6 +117,7 @@ T
     }
 
     execBtn(value){
+        console.log(value);
         switch (value) {
             case 'ac':
                 this.clearAll();    
